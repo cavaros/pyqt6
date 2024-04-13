@@ -22,7 +22,7 @@ class SystemdServiceLister(QWidget):
         layout.addWidget(self.textbox)
 
     def list_services(self):
-        result = subprocess.run(['systemctl', '--user', 'list-units', '--type=service'], capture_output=True, text=True)
+        result = subprocess.run(['systemctl', '--user', '--all', 'list-units', '--type=service'], capture_output=True, text=True)
         self.textbox.setText(result.stdout)
 
 def main():
