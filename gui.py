@@ -15,8 +15,8 @@ class SystemdServiceLister(QWidget):
     def initUI(self):
         self.setWindowTitle('User Systemd GUI by ChatGPT')
 
-        self.table = QTableWidget(0, 7)
-        self.table.setHorizontalHeaderLabels(['Service', 'Loaded', 'Active', 'Sub', 'Start', 'Stop', 'Restart'])
+        self.table = QTableWidget(0, 5)
+        self.table.setHorizontalHeaderLabels(['Service', 'Loaded', 'Active', 'Sub', 'Toggle'])
         # Change the section resize mode to Interactive so the user can resize the columns
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
 
@@ -26,7 +26,7 @@ class SystemdServiceLister(QWidget):
         self.list_services()
 
         # Set the size of the window to 500x500 pixels
-        self.resize(1000, 500)
+        self.resize(650, 500)
 
         # Restore column widths
         for i in range(self.table.columnCount()):
@@ -66,19 +66,17 @@ class SystemdServiceLister(QWidget):
                 self.table.setItem(i, 2, QTableWidgetItem(active))
                 self.table.setItem(i, 3, QTableWidgetItem(sub))
 
-                for j, action in enumerate(['start', 'stop', 'restart'], start=4):
-                    button = QPushButton(action.capitalize())
-                    button.clicked.connect(self.create_service_action(service, action, i))
-                    self.table.setCellWidget(i, j, button)
-                    
-                    # Disable the "start" button if the service is running
-                    if action == 'start' and sub == 'running':
-                        button.setEnabled(False)
-                    
-                    # Disable the "stop" button if the service is dead
-                    if action == 'stop' and sub == 'dead':
-                        button.setEnabled(False)
+                # Determine the action based on the service status
+                action = 'start' if sub == 'dead' else 'stop'
+                button = QPushButton(action.capitalize())
+                button.clicked.connect(self.create_service_action(service, action, i))
+                # Color button red if stop and green if start
+                if action == 'stop':
+                    button.setStyleSheet("background-color: #8b0000;")
+                else:
+                    button.setStyleSheet("background-color: green;")
 
+                self.table.setCellWidget(i, 4, button)
 
     def create_service_action(self, service, action, row):
         def service_action():
@@ -101,16 +99,18 @@ class SystemdServiceLister(QWidget):
         self.table.setItem(row, 2, QTableWidgetItem(active))
         self.table.setItem(row, 3, QTableWidgetItem(sub))
 
-        # Update the enabled status of the buttons
-        start_button = self.table.cellWidget(row, 4)
-        stop_button = self.table.cellWidget(row, 5)
+        # Update the enabled status of the button
+        button = self.table.cellWidget(row, 4)
+        action = 'start' if sub == 'dead' else 'stop'
+        if action == 'stop':
+            button.setStyleSheet("background-color: #8b0000;")
+        else:
+            button.setStyleSheet("background-color: green;")
+        button.setText(action.capitalize())
+        button.clicked.disconnect()
+        button.clicked.connect(self.create_service_action(service, action, row))
 
-        if sub == 'running':
-            start_button.setEnabled(False)
-            stop_button.setEnabled(True)
-        elif sub == 'dead':
-            start_button.setEnabled(True)
-            stop_button.setEnabled(False)
+
 
 
 def main():
