@@ -1,3 +1,4 @@
+import os
 import sys
 import subprocess
 from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QMessageBox, QPushButton
@@ -7,12 +8,12 @@ class SystemdServiceLister(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.settings = QSettings('lucas', 'systemd-gui')
+        self.settings = QSettings(os.getenv("USER"), 'systemd-gui')
 
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle('Systemd Service Lister')
+        self.setWindowTitle('User Systemd GUI by ChatGPT')
 
         self.table = QTableWidget(0, 7)
         self.table.setHorizontalHeaderLabels(['Service', 'Loaded', 'Active', 'Sub', 'Start', 'Stop', 'Restart'])
@@ -69,6 +70,14 @@ class SystemdServiceLister(QWidget):
                     button = QPushButton(action.capitalize())
                     button.clicked.connect(self.create_service_action(service, action, i))
                     self.table.setCellWidget(i, j, button)
+                    
+                    # Disable the "start" button if the service is running
+                    if action == 'start' and sub == 'running':
+                        button.setEnabled(False)
+                    
+                    # Disable the "stop" button if the service is dead
+                    if action == 'stop' and sub == 'dead':
+                        button.setEnabled(False)
 
 
     def create_service_action(self, service, action, row):
@@ -91,6 +100,18 @@ class SystemdServiceLister(QWidget):
         self.table.setItem(row, 1, QTableWidgetItem(loaded))
         self.table.setItem(row, 2, QTableWidgetItem(active))
         self.table.setItem(row, 3, QTableWidgetItem(sub))
+
+        # Update the enabled status of the buttons
+        start_button = self.table.cellWidget(row, 4)
+        stop_button = self.table.cellWidget(row, 5)
+
+        if sub == 'running':
+            start_button.setEnabled(False)
+            stop_button.setEnabled(True)
+        elif sub == 'dead':
+            start_button.setEnabled(True)
+            stop_button.setEnabled(False)
+
 
 def main():
     app = QApplication(sys.argv)
