@@ -21,6 +21,9 @@ class SystemdServiceLister(QWidget):
 
         self.list_services()
 
+        # Set the size of the window to 500x500 pixels
+        self.resize(500, 500)
+
     def list_services(self):
         result = subprocess.run(['systemctl', '--user', 'list-units', '--type=service'], capture_output=True, text=True)
         lines = result.stdout.splitlines()
