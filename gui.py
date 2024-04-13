@@ -67,7 +67,7 @@ class SystemdServiceLister(QWidget):
                 self.table.setItem(i, 3, QTableWidgetItem(sub))
 
                 # Determine the action based on the service status
-                action = 'start' if sub == 'dead' else 'stop'
+                action = 'stop' if sub == 'running' else 'start'
                 button = QPushButton(action.capitalize())
                 button.clicked.connect(self.create_service_action(service, action, i))
                 # Color button red if stop and green if start
@@ -101,7 +101,7 @@ class SystemdServiceLister(QWidget):
 
         # Update the enabled status of the button
         button = self.table.cellWidget(row, 4)
-        action = 'start' if sub == 'dead' else 'stop'
+        action = 'stop' if sub == 'running' else 'start'
         if action == 'stop':
             button.setStyleSheet("background-color: #8b0000;")
         else:
