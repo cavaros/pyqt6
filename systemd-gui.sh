@@ -1,2 +1,2 @@
 #!/bin/bash
-/home/lucas/repos/pyqt6/.venv/bin/python gui.py
+/home/lucas/repos/pyqt6/.venv/bin/python /home/lucas/repos/pyqt6/gui.py
