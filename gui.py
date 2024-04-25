@@ -66,13 +66,11 @@ class SystemdServiceLister(QWidget):
         lines = [
             line
             for line in lines
-            if not line.startswith(("JOB", "LOAD", "ACTIVE", "SUB"))
+            if line
+            and not any(map(line.__contains__, ["JOB", "LOAD", "ACTIVE", "SUB"]))
             and not "loaded units listed" in line
             and not "To show all installed unit files" in line
         ]
-        # Ignore first header and last empty lines
-        lines.pop()
-        lines.pop(0)
 
         self.table.setRowCount(len(lines))
 
