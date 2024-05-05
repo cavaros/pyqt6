@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Systemd-gui
+Comment=Interface to manage systemd user services
+Comment[pt_BR]=Interface para gerenciar serviços do usuário do systemd
+GenericName=Systemd interface
+Exec=/usr/local/bin/systemd-gui/systemd-gui.sh
+Icon=preferences-system-login
+Type=Application
+StartupNotify=true
+Categories=Utility;Development;
+Keywords=systemd;
